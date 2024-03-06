@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 
 const Director = require('../models/Director');
 
@@ -12,6 +13,53 @@ router.post('/', async (req,res,next) => {
 
 router.get('/',async (req,res) => {
     const data = await Director.aggregate([
+        {
+            $lookup : {
+                from: 'movies',
+                localField: '_id',
+                foreignField: 'director_id',
+                as: 'movies'
+            },
+        },
+        {
+            $unwind : {
+                path: '$movies',
+                preserveNullAndEmptyArrays : true
+            }
+        },
+        {
+            $group : {
+                _id: {
+                    _id : '$_id',
+                    name: '$name',
+                    surname: '$surname',
+                    bio: '$bio'
+                },
+                movies: {
+                    $push : '$movies'
+                }
+            }
+        },
+        {
+            $project: {
+                _id: '$_id._id',
+                name: '$_id.name',
+                surname: '$_id.surname',
+                movies: '$movies'
+            }
+        }
+    ]);
+
+    res.json(data);
+})
+
+router.get('/:director_id',async (req,res) => {
+    const data = await Director.aggregate([
+        {
+            $match: {
+                '_id' : new mongoose.Types.ObjectId(req.params.director_id)
+            }
+        },
         {
             $lookup : {
                 from: 'movies',
