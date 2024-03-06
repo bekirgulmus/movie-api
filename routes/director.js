@@ -115,4 +115,15 @@ router.put('/:director_id', async (req,res,next) => {
     }
 })
 
+router.delete('/:director_id', async (req,res,next) => {
+    try {
+        await Director.findByIdAndDelete(req.params.director_id);
+        res.json({
+            success: 1
+        })
+    }catch (e) {
+        next({ message: 'The director was not found', code : 99 });
+    }
+});
+
 module.exports = router;
