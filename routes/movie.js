@@ -4,7 +4,22 @@ const router = express.Router();
 const Movie = require('../models/Movie')
 
 router.get('/',async (req,res) => {
-    const movies = await Movie.find({});
+    const movies = await Movie.aggregate([
+        {
+            $lookup: {
+                from: 'directors',
+                localField: 'director_id',
+                foreignField: '_id',
+                as: 'director'
+            }
+        },
+        {
+            $unwind: {
+                path: '$director',
+                preserveNullAndEmptyArrays : true
+            }
+        }
+    ]);
     res.json(movies);
 });
 
