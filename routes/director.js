@@ -10,4 +10,46 @@ router.post('/', async (req,res,next) => {
     res.json(data);
 })
 
+router.get('/',async (req,res) => {
+    const data = await Director.aggregate([
+        {
+            $lookup : {
+                from: 'movies',
+                localField: '_id',
+                foreignField: 'director_id',
+                as: 'movies'
+            },
+        },
+        {
+            $unwind : {
+                path: '$movies',
+                preserveNullAndEmptyArrays : true
+            }
+        },
+        {
+            $group : {
+                _id: {
+                    _id : '$_id',
+                    name: '$name',
+                    surname: '$surname',
+                    bio: '$bio'
+                },
+                movies: {
+                    $push : '$movies'
+                }
+            }
+        },
+        {
+            $project: {
+                _id: '$_id._id',
+                name: '$_id.name',
+                surname: '$_id.surname',
+                movies: '$movies'
+            }
+        }
+    ]);
+
+    res.json(data);
+})
+
 module.exports = router;
