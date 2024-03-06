@@ -13,12 +13,11 @@ const movie = require('./routes/movie');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
 app.use('/', index)
-app.use('/api/movie',movie)
+app.use('/api/movies',movie)
 
-app.use((req, res, next) => {
-    const err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+app.use((err,req, res, next) => {
+    res.status(err.status || 500);
+    res.json({error : {message: err.message, code: err.code}});
 })
 
 
