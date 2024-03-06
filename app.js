@@ -3,6 +3,15 @@ const bodyParser = require('body-parser');
 const app = express();
 
 
+//Config
+const config = require('./config');
+app.set('api_secret_key', config.api_secret_key);
+
+//Midleware
+const verifyToken = require('./middleware/verify-token');
+
+
+
 const hbs = require('hbs')
 
 const db = require('./helper/db')();
@@ -13,7 +22,9 @@ const director = require('./routes/director');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended : true}));
+
 app.use('/', index)
+app.use('/api', verifyToken);
 app.use('/api/movies',movie)
 app.use('/api/directors',director)
 
