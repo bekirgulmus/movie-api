@@ -100,4 +100,19 @@ router.get('/:director_id',async (req,res) => {
     res.json(data);
 })
 
+router.put('/:director_id', async (req,res,next) => {
+    try {
+        const director = await Director.findByIdAndUpdate(
+            req.params.director_id,
+            req.body,
+            {
+                new: true
+            }
+        );
+        res.json(director);
+    } catch (e) {
+        next({ message: 'The director was not found', code : 99 });
+    }
+})
+
 module.exports = router;
