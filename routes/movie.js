@@ -29,13 +29,17 @@ router.get('/top10',async (req,res) => {
 });
 
 router.post('/',async (req,res,next) => {
-    // const {title, imdb_score, category, country, year} = req.body;
-    const movie = new Movie(req.body);
 
-    await movie.save();
-    res.json({
-        status: 1
-    });
+    try {
+        const movie = new Movie(req.body);
+
+        await movie.save();
+        res.json({
+            status: 1
+        });
+    }catch (e) {
+        res.json(e);
+    }
 })
 
 router.get('/:movie_id', async (req,res,next) => {
