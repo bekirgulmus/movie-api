@@ -2,19 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
-
 //Config
 const config = require('./config');
 app.set('api_secret_key', config.api_secret_key);
 
 //Midleware
 const verifyToken = require('./middleware/verify-token');
-
-
-
-const hbs = require('hbs')
-
-const db = require('./helper/db')();
 
 const index = require('./routes/index');
 const movie = require('./routes/movie');
@@ -32,17 +25,6 @@ app.use((err,req, res, next) => {
     res.status(err.status || 500);
     res.json({error : {message: err.message, code: err.code}});
 })
-
-
-//
-// app.set('view engine', hbs)
-//
-// app.get('/', (req, res) => {
-//     res.render('main.hbs');
-// });
-// app.use('/users', users);
-//
-// app.use(express.static('public'))
 
 app.listen(3000, () => {
     console.log('server is starting')
